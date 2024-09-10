@@ -12,6 +12,8 @@ SteepestDescent <- function(f, fprime, x0, alpha, nIter){
   # Initialize storage for iterations and function values
   fvec = rep(f(x0), nIter + 1) # nIter + 1 so that the starting point is saved in addition
   xvec = rep(x0, nIter + 1) # nIter + 1 so that the starting point is saved in addition
+  xvec[1] <- x0
+  fvec[1] <- f(x0)
   
   # Perform steepest descent update for nIter iterations
   for (i in 1:nIter){
@@ -19,9 +21,10 @@ SteepestDescent <- function(f, fprime, x0, alpha, nIter){
     # and save the new function value
     # [ToDo] fill in
     # Steepest descent update
-
+    xvec[i + 1] <- xvec[i] - alpha * fprime(xvec[i])
+    
     # Function value
-
+    fvec[i + 1] <- f(xvec[i + 1])
   }
   
   # Return the vector of x values, as well as the vector of function values across iterations, including the starting point (both length nIter + 1)
