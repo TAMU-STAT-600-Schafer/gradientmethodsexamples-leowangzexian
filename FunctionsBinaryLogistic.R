@@ -7,7 +7,7 @@
 # obj - scalar value of objective function at inputs
 logistic_objective <- function(beta, X, y){
   # [ToDo] Compute value of objective function for binary logistic regression using current value of X, y and beta
-  
+  return(sum(-y * (X%*%beta) + log(1 + exp(X%*%beta))))
 }
 
 # Gradient calculation for binary logistic regression
@@ -19,7 +19,8 @@ logistic_objective <- function(beta, X, y){
 # gradient - scalar value of gradient at inputs
 logistic_gradient <- function(beta, X, y){
   # [ToDo] Compute gradient for binary logistic regression problem using current values of X, y and beta
-  
+  P <- exp(X %*% beta) / (1 + exp(X %*% beta))
+  return(crossprod(X, (P - y)))
 }
 
 # Calculation for gradient and objective at once
