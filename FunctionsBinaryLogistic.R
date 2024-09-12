@@ -49,16 +49,21 @@ logistic_both <- function(beta, X, y){
 # fvec - vector of length (nIter+1) storing the objective function for each row of beta_mat
 SteepestDescentBinLogistic <- function(X, y, beta_init, alpha, nIter){
   # [ToDo] Initialize storage for iterations and function values
+  p = length(beta_init)
+  beta_mat = matrix(nrow = nIter + 1, ncol = p)
+  beta_mat[1, ] = beta_init
   
+  fvec = vector(made = "numeric", length = Iter + 1)
+  fvec[1] = logistic_objective(beta_init, X, y)
   # Calculate current objective value
   
   # Perform steepest descent update for nIter iterations
   for (i in 1:nIter){
     # At each iteration
     # Calculate gradient value and update x
-    
+    beta_mat[i + 1, ] = beta_mat[i, ] - alpha*logistic_gradient(beta_mat[i, ], X, y)
     # Update the objective
-    
+    fvec[i + 1] = logistic_objective(beta_mat[i + 1, ], X, y)
     # Update pbeta for next round
     
   }
@@ -81,24 +86,30 @@ SteepestDescentBinLogistic <- function(X, y, beta_init, alpha, nIter){
 NewtonBinLogistic <- function(X, y, beta_init, nIter, eta = 1, lambda = 0){
   
   # [ToDo] Initialize storage for iterations and function values
-  
+  fvec = vector(mode="numeric",length=nIter+1)
   # Calculate current objective value
-  
+  fvec[1] = sum(-y*Xb+log(1+exp(Xb)))
   
   # Perform steepest descent update for nIter iterations
   for (i in 1:nIter){
     # At each iteration, calculate gradient value, Hessian, update x, calculate current function value
     
     # Calculate Hessian value and update beta_mat
+    prob = exp(Xb)
+    prob = prob / (1+prob)
+    gradient = crossprod(X, prob - y)
+    w = as.vector(prob*(1-prob))
+    hessian = crossprod(X, w*X)
     
+    beta_mat[i + 1, ] = beta_mat[i, ] - solve(hessian, gradient)
+    # Update Xbeta for next round
+    Xb = X %*% beta_mat[i + 1, ]
     # Update the objective
-    
-    # Update pbeta for next round
-    
+    fvec[i + 1, ] = sum(-y*Xb+log(1+exp(Xb)))
   }
   
   # Return the matrix of beta values, as well as the vector of function values across iterations, including the starting point (both have nIter + 1 elements, for x put them in columns)
-  
+  return(list(beta_mat = beta_mat, fvec = fvec))
 }
 
 
