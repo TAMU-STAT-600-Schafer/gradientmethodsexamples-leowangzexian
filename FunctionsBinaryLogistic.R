@@ -85,36 +85,52 @@ SteepestDescentBinLogistic <- function(X, y, beta_init, alpha, nIter){
 # fvec - vector of length (nIter+1) storing the objective function for each row of beta_mat
 NewtonBinLogistic <- function(Xb, y, beta_init, nIter, eta = 1, lambda = 0){
   
-  p = length(beta_init)
-  beta_mat = matrix(nrow = nIter + 1, ncol = p)
-  beta_mat[1, ] = beta_init
-  
   # [ToDo] Initialize storage for iterations and function values
-  # fvec = vector(mode="numeric",length=nIter+1)
-  fvec = vector(length=nIter+1)
+  p <- length(beta_init)
+  beta_mat <- matrix(nrow = nIter + 1, ncol = p)
+  beta_mat[1, ] <- beta_init
+  
+  fvec <- vector(mode = "numeric", length = nIter + 1)
   # Calculate current objective value
-  fvec[1] = sum(-y*Xb+log(1+exp(Xb)))
+  Xb <- X %*% beta_init
+  fvec[1] <- sum(-y * (Xb) + log(1 + exp(Xb)))
   
   # Perform steepest descent update for nIter iterations
   for (i in 1:nIter){
+    
     # At each iteration, calculate gradient value, Hessian, update x, calculate current function value
     
-    # Calculate Hessian value and update beta_mat
-    prob = exp(Xb)
-    prob = prob / (1+prob)
-    gradient = crossprod(X, prob - y)
-    w = as.vector(prob*(1-prob))
-    hessian = crossprod(X, w*X)
+    # Calculate probabilities
+    prob <- exp(Xb)
+    prob <- prob / (1 + prob)
     
-    beta_mat[i + 1, ] = beta_mat[i, ] - solve(hessian, gradient)
+    # Calculate the gradient
+    gradient <- crossprod(X, prob - y) + lambda*beta_mat[i, ]
+    
+    # Calculate Hessian value and update beta_mat
+    
+    w <- as.vector(prob*(1 - prob))
+    
+    hessian <- crossprod(X, w * X) + lambda*diag(p)
+    
+    # Update beta using Newton's method
+    
+    beta_mat[i + 1, ] <- beta_mat[i, ] - eta * solve(hessian, gradient)
+    
     # Update Xbeta for next round
-    Xb = X %*% beta_mat[i + 1, ]
+    Xb <- X %*% beta_mat[i + 1, ]
+    
+    
     # Update the objective
-    fvec[i + 1, ] = sum(-y*Xb+log(1+exp(Xb)))
+    
+    fvec[i + 1] <- sum(-y * (Xb) + log(1 + exp(Xb)))
+    
   }
   
   # Return the matrix of beta values, as well as the vector of function values across iterations, including the starting point (both have nIter + 1 elements, for x put them in columns)
+  
   return(list(beta_mat = beta_mat, fvec = fvec))
+  
 }
 
 
