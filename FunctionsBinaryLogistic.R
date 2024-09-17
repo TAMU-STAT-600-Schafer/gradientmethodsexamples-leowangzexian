@@ -83,7 +83,7 @@ SteepestDescentBinLogistic <- function(X, y, beta_init, alpha, nIter){
 # OUTPUT
 # beta_mat - matrix of (nIter+1) x p storing the starting values and path of updates of beta
 # fvec - vector of length (nIter+1) storing the objective function for each row of beta_mat
-NewtonBinLogistic <- function(Xb, y, beta_mat, nIter, eta = 1, lambda = 0){
+NewtonBinLogistic <- function(Xb, y, beta_init, nIter, eta = 1, lambda = 0){
   
   # [ToDo] Initialize storage for iterations and function values
   fvec = vector(mode="numeric",length=nIter+1)
@@ -101,15 +101,15 @@ NewtonBinLogistic <- function(Xb, y, beta_mat, nIter, eta = 1, lambda = 0){
     w = as.vector(prob*(1-prob))
     hessian = crossprod(X, w*X)
     
-    beta_mat[i + 1, ] = beta_mat[i, ] - solve(hessian, gradient)
+    beta_init[i + 1, ] = beta_init[i, ] - solve(hessian, gradient)
     # Update Xbeta for next round
-    Xb = X %*% beta_mat[i + 1, ]
+    Xb = X %*% beta_init[i + 1, ]
     # Update the objective
     fvec[i + 1, ] = sum(-y*Xb+log(1+exp(Xb)))
   }
   
   # Return the matrix of beta values, as well as the vector of function values across iterations, including the starting point (both have nIter + 1 elements, for x put them in columns)
-  return(list(beta_mat = beta_mat, fvec = fvec))
+  return(list(beta_init = beta_init, fvec = fvec))
 }
 
 
