@@ -53,7 +53,7 @@ SteepestDescentBinLogistic <- function(X, y, beta_init, alpha, nIter){
   beta_mat = matrix(nrow = nIter + 1, ncol = p)
   beta_mat[1, ] = beta_init
   
-  fvec = vector(moe="numeric", length = nIter + 1)
+  fvec = vector(mode="numeric", length = nIter + 1)
   fvec[1] = logistic_objective(beta_init, X, y)
   # Calculate current objective value
   
